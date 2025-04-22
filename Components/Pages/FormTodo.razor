@@ -1,0 +1,50 @@
+﻿@* // Importando o Service // *@
+@using PlannerBlazor.Services
+@inject TodoService todoService
+
+
+@if (EditedTodo != null)
+{
+    <h3 class="mt-2"> Modificar Tarefas</h3>
+    <form>
+        <div class="mt-2">
+            <label class="form-label" for="">Titulo:</label>
+            <InputText class="form-control" required @bind-Value="EditedTodo.Title" />
+        </div>        
+        <div class="mt-2">
+            <label class="form-label" for="">Daescrição:</label>
+            <InputTextArea class="form-control" required @bind-value="EditedTodo.Description" />
+        </div>
+        <div class="mt-2">
+            <label class="form-label" for="">Prioridade:</label>
+            <select class="form-select" @bind="EditedTodo.Priority">
+                <option value="null">--- Selecione ---</option>
+
+                @* // Listar o ENUM // *@
+                @foreach (var item in Enum.GetValues(typeof(TodoPriority)))
+                {
+                    <option value="@item">@item</option>
+                }
+
+            </select>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-outline-info" @onclick="SaveTodoAsync">Salvar</button>
+            <button class="btn btn-outline-danger">Cancelar</button>
+        </div>
+    </form>
+}
+
+
+@code {
+    [Parameter]
+    public Todo? EditedTodo { get; set; }
+
+    // Pasando o metodo vinculando no botao //
+    private async Task SaveTodoAsync() {
+        if (EditedTodo is not null)
+        {
+            EditedTodo = await todoService.UpdateAsync(EditedTodo);
+        }
+    }
+}

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PlannerBlazor.Components;
 using PlannerBlazor.Models;
+using PlannerBlazor.Services;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,10 @@ builder.Services.AddRazorComponents()
 /// 
 builder.Services.AddDbContext<TodoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+/// Injeção de Dependecias, mais deveria usar Interfaces ///
+builder.Services.AddScoped<TodoService>();
 
 
 var app = builder.Build();

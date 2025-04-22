@@ -1,51 +1,73 @@
 ﻿@page "/todolist"
 
+@* /// RenderMode /// *@
+@rendermode InteractiveServer
+
+@* // Importando o Service // *@
+@using PlannerBlazor.Services
+@inject TodoService todoService
+
 <PageTitle>Lista de Tarefas</PageTitle>
+
 <h3>Lista de Tarefas</h3>
 
-<button class="btn btn-dark">Recarregar</button>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Priority</th>
-            <th>Done</th>
-            <th>DneDate</th>
-            <th>*</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr style="cursor: pointer; text-decoration: line-through;" class="table-danger">
-            <td>Title</td>
-            <td>Priority</td>
-            <td><input type="checkbox"></td>
-            <td>01/01/2024</td>
-            <td>
-                <button class="btn btn-dark">Edit</button>
-                <button class="btn btn-danger">Excluir</button>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="5">
-                <form>
-                    <div class="mt-2">
-                        <label class="form-label" for="">Titulo:</label>
-                        <input class="form-control" />
-                    </div>
-                    <div class="mt-2">
-                        <label class="form-label" for="">Prioridade:</label>
-                        <select class="form-select">
-                            <option value="null">--- Selecione ---</option>
-                            <option value="null">Urgente</option>
-                        </select>
-                    </div>
-                    <div class="mt-3">
-                        <button class="btn btn-outline-info">Salvar</button>
-                        <button class="btn btn-outline-danger">Cancelar</button>
-                    </div>
-                </form>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<p> Nenhuma Tarefa listada</p>
+<button class="btn btn-dark" @onclick="GetActiveTodoAsync">Recarregar</button>
+
+@* /// Vericar se a tabela existe, se sim, mostra-la /// *@
+@if (todos != null && todos.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Done</th>
+                <th>DneDate</th>
+                <th>*</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in todos)
+            {
+                <tr style="cursor: pointer; text-decoration: line-through;" class="table-danger">
+                    <td>@todo.Title</td>
+                    <td>@todo.Priority</td>
+                    <td><input type="checkbox" checked="@todo.Done"></td>
+                    <td>@todo.DoneDate</td>
+                    <td>
+                        <button class="btn btn-dark">Edit</button>
+                        <button class="btn btn-danger">Excluir</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <formTodo> </formTodo>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p> Nenhuma Tarefa listada</p>
+}
+
+<button class="btn btn-dark" @onclick="AddTodoAsync"> Adicionar Tarefa </button>
+
+
+@code {
+
+    // Criação de lista para a manipulação // 
+    private List<Todo>? todos;
+
+    private async Task GetActiveTodoAsync() {
+        todos = await todoService.GetActivesTodosAsync();
+    }
+
+    private async Task AddTodoAsync() {
+        //
+        await todoService.NewTodoAsync();
+        await GetActiveTodoAsync();
+    }
+}
