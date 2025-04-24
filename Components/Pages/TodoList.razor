@@ -1,5 +1,4 @@
-﻿@page "/todolist"
-
+﻿@page "/"
 @* /// RenderMode /// *@
 @rendermode InteractiveServer
 
@@ -27,23 +26,33 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var todo in todos)
-            {
-                <tr style="cursor: pointer; text-decoration: line-through;" class="table-danger">
-                    <td>@todo.Title</td>
-                    <td>@todo.Priority</td>
-                    <td><input type="checkbox" checked="@todo.Done"></td>
-                    <td>@todo.DoneDate</td>
+            @foreach (var todo in todos) {
+
+                <tr 
+                    style="cursor: pointer; @(todo.Done ? "text-decoration: line-through;" : "" );" 
+                    class="@(todo.Priority == TodoPriority.Urgent ? "table-danger" : "")"> @* /// Condição (Se for urgente = Vermelho), Condição (Se for concluida, ficara sublinhado) /// *@
+
+                    <td @onclick="() => EditTodo(todo)" >@todo.Title</td>
+                    <td @onclick="() => ChangePriorityAsync(todo)">
+                        @todo.Priority
+                    </td>
+                    <td><input type="checkbox" checked="@todo.Done" @onchange="() => UpdateDoneDate(todo)"></td> @* /// Chamando de o método de forma ANÔNIMA /// *@
+                    <td>@(todo.DoneDate.HasValue ? todo.DoneDate.Value.ToString("dd/MM/yyyy") : "")</td> @* /// Condição para corrigir a data, se ela for diferente de null /// *@
                     <td>
-                        <button class="btn btn-dark">Edit</button>
-                        <button class="btn btn-danger">Excluir</button>
+                        <button class="btn btn-dark" @onclick="() => EditTodo(todo)">Editar</button> @* /// Chamando de o método de forma ANÔNIMA /// *@
+                        <button class="btn btn-danger" @onclick="() => RemoveTodoAsync(todo)">Excluir</button> @* /// Chamando de o método de forma ANÔNIMA /// *@
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="5">
-                        <formTodo> </formTodo>
-                    </td>
-                </tr>
+
+                @if (todo.Edit) {
+
+                    <tr>
+                        <td colspan="5">
+                            <FormTodo EditedTodo="todo"></FormTodo>
+                        </td>
+                    </tr>
+
+                }
             }
         </tbody>
     </table>
@@ -61,13 +70,71 @@ else
     // Criação de lista para a manipulação // 
     private List<Todo>? todos;
 
+    //// <summary>
+    /// Método para "Recarregar (GetActivesTodosAsync()) Assim q iniciar a aplicação"
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync() {
+        await GetActiveTodoAsync();
+    }
+
+    //// <summary>
+    /// Método que tras todas as tarefas ativas
+    /// </summary>
     private async Task GetActiveTodoAsync() {
         todos = await todoService.GetActivesTodosAsync();
     }
 
+    //// <summary>
+    /// Método que adiciona uma nova tarefas
+    /// </summary>
     private async Task AddTodoAsync() {
         //
         await todoService.NewTodoAsync();
         await GetActiveTodoAsync();
+    }
+
+    //// <summary>
+    /// Método que adiciona a data, quando concluido a tarefa
+    /// </summary>
+    /// <param name="todo"> um task, no modelo de "TODO" </param>
+    private void UpdateDoneDate(Todo todo) {
+        if (todo.Done) {
+            todo.DoneDate = null;  
+            todo.Done = false;
+        } else {
+            todo.DoneDate = DateTime.Now;
+            todo.Done = true;
+        }
+    }
+
+    //// <summary>
+    /// Método que remove uma ToDo
+    /// </summary>
+    /// <param name="todo"> um task, no modelo de "TODO" </param>
+    private async Task RemoveTodoAsync(Todo todo) {
+        await todoService.DeleteAsync(todo);
+        await GetActiveTodoAsync();
+    }
+
+
+    //// <summary>
+    /// Método que torna o "true" em "false" tipo um porta logica "NOT"
+    /// </summary>
+    /// <param name="todo"> um task, no modelo de "TODO" </param>
+    private void EditTodo(Todo todo) {
+        todo.Edit = !todo.Edit;
+    }
+
+    //// <summary>
+    /// Método que mudar a prioridade da tarefa
+    /// </summary>
+    /// <param name="todo"> um task, no modelo de "TODO" </param>
+    private async Task ChangePriorityAsync(Todo todo) {
+        var priorityIndex = (int)todo.Priority;
+        priorityIndex ++;
+        todo.Priority = priorityIndex > 3 ? TodoPriority.Urgent : (TodoPriority)priorityIndex;
+
+        await todoService.UpdateAsync(todo);
     }
 }

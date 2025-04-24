@@ -29,7 +29,8 @@ public class TodoService
     public async Task<List<Todo>> GetActivesTodosAsync() {
         var list = await _context.Todos
             .Where(x => !x.Done) // Adição de "!" == a not -> não está feito
-            .OrderBy(x => x.Priority) // Deixando os mais urgentes primeiro
+            .OrderByDescending(x => x.Priority > 0) // Fazendo os com prioridades fiquem na frente dos sem status de prioridade
+            .ThenBy(x => x.Priority) // Deixando os mais urgentes primeiro
             .ToListAsync();
         return list;
     }

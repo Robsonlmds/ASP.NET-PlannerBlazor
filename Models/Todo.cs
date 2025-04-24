@@ -1,4 +1,7 @@
-﻿namespace Planner.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Planner.Models;
 
 public enum TodoPriority
 {
@@ -14,7 +17,7 @@ public class Todo
 
     //[Required] //Evidenciar de outra forma
     public DateTime CreationDate { get; set; }
-    public TodoPriority Priority { get; set; }
+    public TodoPriority Priority { get; set; } = TodoPriority.Casual; /*/// Vir como CASUAL ///*/
 
     //[Required] //Evidenciar de outra forma
     public string? Title { get; set; }
@@ -23,5 +26,9 @@ public class Todo
     public DateTime? DoneDate { get; set; }
 
     public int CategoryId { get; set; }
-    public Category? Category { get; set; } 
+    public Category? Category { get; set; }
+
+
+    [NotMapped] /*/// Faz com que esta propiedade nao va para o banco de dados ///*/
+    public bool Edit { get; set; }
 }
