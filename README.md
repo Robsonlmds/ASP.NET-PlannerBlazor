@@ -12,7 +12,7 @@
 ### Demostração 
 
 <h1 align="center">
-  <img alt="videoSite" title="videoSite" src="PlannerBlazor/wwwroot/assets/planner-blazor.gif"/>
+  <img alt="videoSite" title="videoSite" src="wwwroot/assets/planner-blazor.gif"/> 
 </h1>
 
 ![Blazor](https://img.shields.io/badge/Blazor-Server-blueviolet?logo=blazor)   ![Status](https://img.shields.io/badge/status-concluido-green)  
