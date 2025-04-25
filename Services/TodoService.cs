@@ -41,7 +41,7 @@ public class TodoService
     public async Task NewTodoAsync() {
         await _context.Todos.AddAsync (new Todo
         {
-            Title = $"Tarefa {DateTime.Now}",
+            Title = $"Nova Tarefa, criada em {DateTime.Now}",
             Description = $"Tarefa {DateTime.Now}",
             CategoryId = 1,
         });

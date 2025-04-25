@@ -10,7 +10,7 @@
 
 <h3>Lista de Tarefas</h3>
 
-<button class="btn btn-dark" @onclick="GetActiveTodoAsync">Recarregar</button>
+@* <button class="btn btn-dark" @onclick="GetActiveTodoAsync">Recarregar</button> *@
 
 @* /// Vericar se a tabela existe, se sim, mostra-la /// *@
 @if (todos != null && todos.Any())
@@ -18,11 +18,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Priority</th>
-                <th>Done</th>
-                <th>DneDate</th>
-                <th>*</th>
+                <th>Titulo</th>
+                <th>Prioridade</th>
+                <th>Concluida</th>
+                <th>Data de conclução</th>
+                <th>Ações</th>
+                <th>Categria</th>
             </tr>
         </thead>
         <tbody>
@@ -66,6 +67,8 @@ else
 
 
 @code {
+
+    #region Métodos
 
     // Criação de lista para a manipulação // 
     private List<Todo>? todos;
@@ -137,4 +140,6 @@ else
 
         await todoService.UpdateAsync(todo);
     }
+
+    #endregion
 }
